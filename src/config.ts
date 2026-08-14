@@ -9,7 +9,7 @@
 export const CITY = "重庆";
 
 export const DATA_BASE_URL =
-  "https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/data";
+  "https://raw.githubusercontent.com/qtiheu/chongqing-glow-dashboard/main/data";
 
 /** 推送阈值（与 pipeline/.github/workflows/daily.yml 的 PUSH_THRESHOLD 保持一致） */
 export const PUSH_THRESHOLD = 0.6;
