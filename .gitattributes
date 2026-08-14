@@ -1,0 +1,9 @@
+# 统一 LF 换行：GitHub Actions（Linux runner）上避免 CRLF 问题
+* text=auto eol=lf
+
+# 二进制文件不转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary

@@ -1,0 +1,60 @@
+import type { Forecast, HistoryRecord } from "@/lib/types";
+
+/** 内置示例数据：用于占位 URL 或抓取失败时展示（明确标注「示例数据」） */
+export const SAMPLE_FORECAST: Forecast = {
+  city: "重庆",
+  updated_at: "2026-08-14T15:35:00+08:00",
+  source: "sunsetbot",
+  stale: false,
+  last_push_at: "2026-08-14T15:35:12+08:00",
+  sunset: {
+    date: "2026-08-14",
+    vividness: 0.83,
+    level: "大烧",
+    aod: 0.21,
+    sunset_time: "19:42",
+    model_run: "ECMWF 2026081400z",
+  },
+  sunrise: {
+    date: "2026-08-15",
+    vividness: 0.35,
+    level: "微烧",
+    aod: 0.3,
+    sunrise_time: "06:28",
+    model_run: "ECMWF 2026081400z",
+  },
+};
+
+/** 内置示例历史（近 30 天，双折线效果用） */
+export const SAMPLE_HISTORY: HistoryRecord[] = [
+  { date: "2026-07-16", sunrise_vividness: 0.28, sunset_vividness: 0.31 },
+  { date: "2026-07-17", sunrise_vividness: 0.12, sunset_vividness: 0.44 },
+  { date: "2026-07-18", sunrise_vividness: 0.21, sunset_vividness: 0.62 },
+  { date: "2026-07-19", sunrise_vividness: 0.34, sunset_vividness: 0.29 },
+  { date: "2026-07-20", sunrise_vividness: 0.08, sunset_vividness: 0.15 },
+  { date: "2026-07-21", sunrise_vividness: 0.17, sunset_vividness: 0.52 },
+  { date: "2026-07-22", sunrise_vividness: 0.25, sunset_vividness: 0.73 },
+  { date: "2026-07-23", sunrise_vividness: 0.41, sunset_vividness: 0.36 },
+  { date: "2026-07-24", sunrise_vividness: 0.19, sunset_vividness: 0.28 },
+  { date: "2026-07-25", sunrise_vividness: 0.33, sunset_vividness: 0.9 },
+  { date: "2026-07-26", sunrise_vividness: 0.46, sunset_vividness: 0.58 },
+  { date: "2026-07-27", sunrise_vividness: 0.22, sunset_vividness: 0.41 },
+  { date: "2026-07-28", sunrise_vividness: 0.14, sunset_vividness: 0.26 },
+  { date: "2026-07-29", sunrise_vividness: 0.09, sunset_vividness: 0.35 },
+  { date: "2026-07-30", sunrise_vividness: 0.27, sunset_vividness: 0.67 },
+  { date: "2026-07-31", sunrise_vividness: 0.38, sunset_vividness: 0.49 },
+  { date: "2026-08-01", sunrise_vividness: 0.2, sunset_vividness: 0.55 },
+  { date: "2026-08-02", sunrise_vividness: 0.11, sunset_vividness: 0.31 },
+  { date: "2026-08-03", sunrise_vividness: 0.24, sunset_vividness: 0.44 },
+  { date: "2026-08-04", sunrise_vividness: 0.36, sunset_vividness: 0.28 },
+  { date: "2026-08-05", sunrise_vividness: 0.15, sunset_vividness: 0.39 },
+  { date: "2026-08-06", sunrise_vividness: 0.29, sunset_vividness: 0.51 },
+  { date: "2026-08-07", sunrise_vividness: 0.42, sunset_vividness: 0.63 },
+  { date: "2026-08-08", sunrise_vividness: 0.26, sunset_vividness: 0.47 },
+  { date: "2026-08-09", sunrise_vividness: 0.18, sunset_vividness: 0.33 },
+  { date: "2026-08-10", sunrise_vividness: 0.31, sunset_vividness: 0.7 },
+  { date: "2026-08-11", sunrise_vividness: 0.23, sunset_vividness: 0.38 },
+  { date: "2026-08-12", sunrise_vividness: 0.13, sunset_vividness: 0.25 },
+  { date: "2026-08-13", sunrise_vividness: 0.27, sunset_vividness: 0.6 },
+  { date: "2026-08-14", sunrise_vividness: 0.35, sunset_vividness: 0.83 },
+];

@@ -1,0 +1,5 @@
+{
+  "city": "重庆",
+  "placeholder": true,
+  "message": "占位文件：首次运行 GitHub Actions 后会自动写入真实预报数据。详见 README 或网站「自助搭建指南」。"
+}

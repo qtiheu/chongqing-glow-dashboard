@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 黄昏暖色系：暗蓝天光 → 绯红 → 橙，深色看板基调 */
+    --background: 222 47% 8%;
+    --foreground: 40 33% 96%;
+
+    --card: 222 40% 11%;
+    --card-foreground: 40 33% 96%;
+
+    --popover: 222 40% 11%;
+    --popover-foreground: 40 33% 96%;
+
+    --primary: 16 92% 60%;
+    --primary-foreground: 20 33% 98%;
+
+    --secondary: 217 25% 20%;
+    --secondary-foreground: 40 33% 96%;
+
+    --muted: 217 25% 18%;
+    --muted-foreground: 35 12% 64%;
+
+    --accent: 350 80% 55%;
+    --accent-foreground: 20 33% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 20 33% 98%;
+
+    --border: 217 22% 22%;
+    --input: 217 22% 22%;
+    --ring: 16 92% 60%;
+
+    --radius: 0.9rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family:
+      "PingFang SC",
+      "Microsoft YaHei",
+      "Noto Sans SC",
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
+    /* 中文不用斜体 */
+    font-style: normal;
+    background-image:
+      radial-gradient(1100px 520px at 85% -10%, hsl(16 85% 22% / 0.55), transparent 60%),
+      radial-gradient(900px 480px at -10% 110%, hsl(222 65% 18% / 0.7), transparent 60%),
+      linear-gradient(180deg, hsl(224 50% 9%) 0%, hsl(222 45% 7%) 100%);
+    background-attachment: fixed;
+  }
+  ::selection {
+    background: hsl(16 92% 60% / 0.35);
+  }
+  /* 数字统一使用 tabular-nums，避免跳动 */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  em,
+  i,
+  .italic {
+    font-style: normal;
+  }
+}
+
+/* 大烧微光效 */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    text-shadow:
+      0 0 18px hsl(16 95% 60% / 0.75),
+      0 0 46px hsl(16 95% 50% / 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 26px hsl(16 95% 62% / 0.95),
+      0 0 64px hsl(350 90% 55% / 0.55);
+  }
+}
+.glow-fire {
+  animation: glow-pulse 2.6s ease-in-out infinite;
+}
+
+/* 细滚动条（趋势图容器） */
+.thin-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: hsl(217 22% 26%);
+  border-radius: 999px;
+}

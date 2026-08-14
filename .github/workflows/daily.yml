@@ -1,0 +1,59 @@
+name: 每日朝霞晚霞预报与微信推送
+
+on:
+  schedule:
+    # UTC 07:35 = 北京时间 15:35 → 推送当晚晚霞
+    - cron: "35 7 * * *"
+    # UTC 13:35 = 北京时间 21:35 → 推送次日朝霞
+    - cron: "35 13 * * *"
+  workflow_dispatch: # 支持手动触发
+
+env:
+  # 鲜艳度 ≥ 该阈值时，推送标题加【🔥值得出门】前缀（可按需调整）
+  PUSH_THRESHOLD: "0.6"
+
+jobs:
+  forecast-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 提交 data/*.json 需要写权限
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      - name: 抓取预报数据
+        run: python pipeline/scraper.py
+
+      - name: 推送当晚晚霞预报（北京 15:35 触发）
+        if: github.event.schedule == '35 7 * * *' || github.event.schedule == ''
+        run: python pipeline/push.py --event sunset
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          PUSH_THRESHOLD: ${{ env.PUSH_THRESHOLD }}
+
+      - name: 推送次日朝霞预报（北京 21:35 触发）
+        if: github.event.schedule == '35 13 * * *' || github.event.schedule == ''
+        run: python pipeline/push.py --event sunrise
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          PUSH_THRESHOLD: ${{ env.PUSH_THRESHOLD }}
+
+      - name: 提交并推送数据更新
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/forecast.json data/history.json
+          if git diff --cached --quiet; then
+            echo "数据无变化，跳过提交"
+          else
+            git commit -m "chore: 更新朝霞晚霞预报数据 $(date -u +'%Y-%m-%d %H:%M')"
+            git push
+          fi
