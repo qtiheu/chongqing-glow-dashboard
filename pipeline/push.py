@@ -28,7 +28,7 @@ import json
 import os
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import requests
@@ -51,7 +51,9 @@ def log(msg: str) -> None:
 
 
 def now_iso() -> str:
-    return datetime.now().astimezone().isoformat(timespec="seconds")
+    """北京时间 ISO 字符串（无论 runner 时区，统一 +08:00）。"""
+    bj = datetime.now(timezone(timedelta(hours=8)))
+    return bj.isoformat(timespec="seconds")
 
 
 def aod_label(aod: Optional[float]) -> str:

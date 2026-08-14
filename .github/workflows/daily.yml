@@ -34,6 +34,7 @@ jobs:
 
       - name: 推送当晚晚霞预报（北京 15:35 触发）
         if: github.event.schedule == '35 7 * * *' || github.event.schedule == ''
+        continue-on-error: true # 推送失败不阻塞数据提交；失败原因见该步日志
         run: python pipeline/push.py --event sunset
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
@@ -41,12 +42,14 @@ jobs:
 
       - name: 推送次日朝霞预报（北京 21:35 触发）
         if: github.event.schedule == '35 13 * * *' || github.event.schedule == ''
+        continue-on-error: true
         run: python pipeline/push.py --event sunrise
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           PUSH_THRESHOLD: ${{ env.PUSH_THRESHOLD }}
 
       - name: 提交并推送数据更新
+        if: always() # 无论推送是否失败，抓取到的数据都提交回仓库
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
