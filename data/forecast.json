@@ -1,5 +1,24 @@
 {
+  "sunset": {
+    "date": "2026-08-14",
+    "vividness": 0.0,
+    "level": "不烧",
+    "aod": 0.288,
+    "sunset_time": "19:34",
+    "model_run": "EC 凌晨时次 (2026081312z)"
+  },
+  "sunrise": {
+    "date": "2026-08-15",
+    "vividness": 0.0,
+    "level": "不烧",
+    "aod": 0.278,
+    "sunrise_time": "06:23",
+    "model_run": "GFS 傍晚时次 (2026081406z)"
+  },
+  "sunsetbot_fail_count": 0,
   "city": "重庆",
-  "placeholder": true,
-  "message": "占位文件：首次运行 GitHub Actions 后会自动写入真实预报数据。详见 README 或网站「自助搭建指南」。"
+  "updated_at": "2026-08-14T22:03:47+08:00",
+  "source": "sunsetbot",
+  "stale": false,
+  "last_push_at": null
 }
