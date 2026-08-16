@@ -1,24 +1,24 @@
 {
   "sunset": {
-    "date": "2026-08-15",
-    "vividness": 0.0,
+    "date": "2026-08-16",
+    "vividness": 0.049,
     "level": "不烧",
-    "aod": 0.267,
-    "sunset_time": "19:33",
-    "model_run": "EC 凌晨时次 (2026081412z)"
+    "aod": 0.23,
+    "sunset_time": "19:32",
+    "model_run": "EC 凌晨时次 (2026081512z)"
   },
   "sunrise": {
-    "date": "2026-08-16",
-    "vividness": 0.013,
-    "level": "不烧",
-    "aod": 0.282,
-    "sunrise_time": "06:23",
-    "model_run": "EC 凌晨时次 (2026081412z)"
+    "date": "2026-08-17",
+    "vividness": 0.306,
+    "level": "微烧",
+    "aod": 0.271,
+    "sunrise_time": "06:24",
+    "model_run": "EC 凌晨时次 (2026081512z)"
   },
   "sunsetbot_fail_count": 0,
   "city": "重庆",
-  "updated_at": "2026-08-15T21:54:45+08:00",
+  "updated_at": "2026-08-16T15:54:54+08:00",
   "source": "sunsetbot",
   "stale": false,
-  "last_push_at": "2026-08-15T21:54:46+08:00"
+  "last_push_at": "2026-08-16T15:54:55+08:00"
 }
