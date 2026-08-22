@@ -9,16 +9,16 @@
   },
   "sunrise": {
     "date": "2026-08-23",
-    "vividness": 0.092,
+    "vividness": 0.043,
     "level": "不烧",
     "aod": 0.476,
     "sunrise_time": "06:27",
-    "model_run": "GFS 中午时次 (2026082200z)"
+    "model_run": "GFS 傍晚时次 (2026082206z)"
   },
   "sunsetbot_fail_count": 0,
   "city": "重庆",
-  "updated_at": "2026-08-22T15:55:25+08:00",
+  "updated_at": "2026-08-22T21:55:07+08:00",
   "source": "sunsetbot",
   "stale": false,
-  "last_push_at": "2026-08-22T15:55:25+08:00"
+  "last_push_at": "2026-08-22T21:55:08+08:00"
 }
