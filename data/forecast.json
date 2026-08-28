@@ -1,24 +1,24 @@
 {
   "sunset": {
-    "date": "2026-08-28",
-    "vividness": 0.37,
-    "level": "微烧",
-    "aod": 0.49333333333333335,
+    "date": "2026-08-29",
+    "vividness": 0.44,
+    "level": "小烧",
+    "aod": 0.4083333333333334,
     "model_run": "Open-Meteo CAMS 简化评分",
-    "sunset_time": "19:21"
+    "sunset_time": "19:20"
   },
   "sunrise": {
-    "date": "2026-08-29",
-    "vividness": 0.04,
+    "date": "2026-08-30",
+    "vividness": 0.0,
     "level": "不烧",
-    "aod": 0.44,
+    "aod": 0.42,
     "model_run": "Open-Meteo CAMS 简化评分",
     "sunrise_time": "06:29"
   },
-  "sunsetbot_fail_count": 1,
+  "sunsetbot_fail_count": 2,
   "city": "重庆",
-  "updated_at": "2026-08-28T07:03:33+08:00",
+  "updated_at": "2026-08-29T03:32:01+08:00",
   "source": "open-meteo",
   "stale": false,
-  "last_push_at": "2026-08-28T07:03:33+08:00"
+  "last_push_at": "2026-08-29T03:32:01+08:00"
 }
