@@ -79,8 +79,15 @@ export function aodLabel(aod: number | null | undefined): string {
 
 export function sourceLabel(source: string): string {
   if (source === "sunsetbot") return "SunsetBot（ECMWF/GFS + CAMS）";
+  if (source === "open-meteo-ecmwf") return "Open-Meteo ECMWF IFS + CAMS";
   if (source === "open-meteo") return "Open-Meteo（简化评分）";
   return source || "未知";
+}
+
+/** 预计持续时长格式化：分钟 → "约 X 分钟"；未知返回 "—" */
+export function formatDuration(minutes: number | null | undefined): string {
+  if (!minutes || minutes <= 0) return "—";
+  return `约 ${Math.round(minutes)} 分钟`;
 }
 
 export function formatUpdated(iso: string | null | undefined): string {
