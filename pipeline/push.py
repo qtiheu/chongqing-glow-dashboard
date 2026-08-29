@@ -84,6 +84,7 @@ def build_message(forecast: dict, event: str, threshold: float) -> tuple[str, st
     aod = item.get("aod")
     model_run = item.get("model_run", "未知")
     date = item.get("date", "")
+    duration_minutes = item.get("duration_minutes")
 
     if event == "sunset":
         emoji, head, time_label, key = "🌇", "今晚晚霞", "日落", "sunset_time"
@@ -94,10 +95,17 @@ def build_message(forecast: dict, event: str, threshold: float) -> tuple[str, st
     fire = "【🔥值得出门】" if vividness >= threshold else ""
     title = f"{fire}{emoji} {city}·{head}预报"
 
+    # 持续时间展示：有值显示"约 X 分钟"，否则显示"—"
+    if duration_minutes:
+        duration_text = f"约 {int(duration_minutes)} 分钟"
+    else:
+        duration_text = "—"
+
     lines = [
         f"{emoji} {city}·{head}预报",
         f"鲜艳度 {vividness:.2f}（{level}）｜气溶胶 {aod if aod is None else round(aod, 2)}（{aod_label(aod)}）",
-        f"{time_label} {event_time}｜数据：{model_run}",
+        f"{time_label} {event_time}｜预计持续 {duration_text}",
+        f"数据：{model_run}",
         f"建议：{advice_for(vividness)}",
     ]
     content = "<br>".join(lines)
