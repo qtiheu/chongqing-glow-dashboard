@@ -15,6 +15,8 @@ export interface GlowEvent {
   sunrise_time?: string;
   /** 预报模型与时次，如 "ECMWF 2026081400z" */
   model_run: string;
+  /** 预计持续时长（分钟），可为 null（未知） */
+  duration_minutes?: number | null;
 }
 
 export interface Forecast {
