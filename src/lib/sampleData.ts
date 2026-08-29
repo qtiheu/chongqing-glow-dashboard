@@ -14,6 +14,7 @@ export const SAMPLE_FORECAST: Forecast = {
     aod: 0.21,
     sunset_time: "19:42",
     model_run: "ECMWF 2026081400z",
+    duration_minutes: 90,
   },
   sunrise: {
     date: "2026-08-15",
@@ -22,6 +23,7 @@ export const SAMPLE_FORECAST: Forecast = {
     aod: 0.3,
     sunrise_time: "06:28",
     model_run: "ECMWF 2026081400z",
+    duration_minutes: 60,
   },
 };
 
