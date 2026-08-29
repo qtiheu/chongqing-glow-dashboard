@@ -42,8 +42,9 @@ if hasattr(sys.stderr, "reconfigure"):
 # ---------------------------------------------------------------------------
 # 配置
 # ---------------------------------------------------------------------------
-CITY = "重庆"
-CHONGQING_LAT, CHONGQING_LON = 29.563, 106.551  # 重庆主城坐标（降级源用）
+CITY = "重庆主城"
+# 重庆主城区坐标：渝中区（解放碑附近），比笼统的市区定位更精确
+CHONGQING_LAT, CHONGQING_LON = 29.5566, 106.5698
 
 SUNSETBOT_URL = "https://sunsetbot.top/"
 OPENMETEO_URL = "https://api.open-meteo.com/v1/forecast"
@@ -172,15 +173,20 @@ def fetch_sunsetbot() -> dict:
                 times_name = data.get("display_times_name") or ""
                 times_str = data.get("display_times_str") or ""
                 run_str = f"{model_disp} {times_name} ({times_str})".strip()
+                center = dt.strftime("%H:%M")
+                # 持续时间用 Open-Meteo 云况序列估算（补充信息，失败不影响主数据）
+                duration = _fetch_duration_hint(center, dt.strftime("%Y-%m-%d"), key == "sunset")
                 got = {
                     "date": dt.strftime("%Y-%m-%d"),
                     "vividness": q,
                     "level": level_of(q),
                     "aod": first_float(data.get("tb_aod") or ""),
-                    time_field: dt.strftime("%H:%M"),
+                    time_field: center,
                     "model_run": run_str,
+                    "duration_minutes": duration,
                 }
-                log(f"  ✓ {key}[{model}]: vividness={q} aod={got['aod']} time={event_time} run={run_str}")
+                log(f"  ✓ {key}[{model}]: vividness={q} aod={got['aod']} time={event_time} "
+                    f"duration={duration if duration is not None else '未知'} run={run_str}")
                 break
             except Exception as e:  # noqa: BLE001
                 log(f"  ⚠ {key}[{model}] 失败: {e!r}")
@@ -188,6 +194,42 @@ def fetch_sunsetbot() -> dict:
             raise RuntimeError(f"sunsetbot {key} 在 EC/GFS 均无有效预报")
         results[key] = got
     return results
+
+
+def _fetch_duration_hint(center: str, date_str: str, is_sunset: bool) -> Optional[int]:
+    """
+    额外拉取 Open-Meteo 云况序列，估算给定时刻（center, 某日）火烧云持续时长。
+    仅作为持续时间补充信息；任何失败返回 None，不阻塞主流程。
+    """
+    try:
+        params = {
+            "latitude": CHONGQING_LAT,
+            "longitude": CHONGQING_LON,
+            "hourly": ("cloud_cover_low,cloud_cover_mid,cloud_cover_high,"
+                       "precipitation_probability"),
+            "timezone": "Asia/Shanghai",
+            "start_date": date_str,
+            "end_date": date_str,
+            "models": "ecmwf_ifs025",
+        }
+        fc = http_get(OPENMETEO_URL, params=params).json()
+        times = _hourly_series(fc, "time")
+        if not times:
+            return None
+        before_h, after_h = (1.5, 1.0) if is_sunset else (1.0, 1.5)
+        return _duration_minutes(
+            times,
+            _hourly_series(fc, "cloud_cover_low"),
+            _hourly_series(fc, "cloud_cover_mid"),
+            _hourly_series(fc, "cloud_cover_high"),
+            _hourly_series(fc, "precipitation_probability"),
+            center,
+            before_hours=before_h,
+            after_hours=after_h,
+        )
+    except Exception as e:  # noqa: BLE001
+        log(f"  · 持续时间估算失败（忽略）: {e!r}")
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -213,6 +255,41 @@ def _window_mean(series: list, times: list, center: str, span_hours: float = 1.5
         if -span_hours * 60 <= diff <= span_hours * 60:
             vals.append(v)
     return sum(vals) / len(vals) if vals else None
+
+
+def _duration_minutes(times: list, cloud_low, cloud_mid, cloud_high, precip,
+                      center: str, before_hours: float = 1.5, after_hours: float = 1.0) -> Optional[int]:
+    """
+    估算火烧云「预计持续时长」（分钟）。
+    思路: 在 center（日落/日出时刻）前后不对称窗口内
+    （日落: 前 1.5h ~ 后 1h；日出: 前 1h ~ 后 1.5h，调用方传入），
+    统计「中高云覆盖适中（25%~85%）且低云不挡（<55%）且降水概率低（<40%）」的连续小时数，
+    每个可烧小时按 60 分钟计。无可烧小时或数据缺失返回 None。
+    """
+    try:
+        ch, cm = (int(x) for x in center.split(":"))
+    except Exception:
+        return None
+    ok_count = 0
+    for i, t in enumerate(times):
+        hh = int(t[11:13])
+        mm = int(t[14:16])
+        diff = (hh * 60 + mm) - (ch * 60 + cm)
+        if not (-before_hours * 60 <= diff <= after_hours * 60):
+            continue
+        mid = cloud_mid[i] if i < len(cloud_mid) else None
+        high = cloud_high[i] if i < len(cloud_high) else None
+        low = cloud_low[i] if i < len(cloud_low) else None
+        pr = precip[i] if i < len(precip) else None
+        if mid is None or high is None:
+            continue
+        mid_high = (mid + high) / 2.0
+        if 25 <= mid_high <= 85 and (low is None or low < 55) and (pr is None or pr < 40):
+            ok_count += 1
+    if ok_count == 0:
+        return None
+    # 每个可烧小时按 60 分钟计，但至少要有一段（45 分钟起）
+    return max(45, ok_count * 60)
 
 
 def _vividness_score(cloud_low, cloud_mid, cloud_high, aod, humidity, visibility_km, precip_prob):
@@ -317,6 +394,19 @@ def fetch_openmeteo(model: str = "ecmwf_ifs025") -> dict:
             f"hum={humidity} vis={visibility_km} prec={prec})")
 
         field = "sunset_time" if is_sunset else "sunrise_time"
+        # 日落: 云在日落前 1.5h 就开始上色；日出: 日落后 1.5h 仍有残余
+        before_h, after_h = (1.5, 1.0) if is_sunset else (1.0, 1.5)
+        duration = _duration_minutes(
+            times,
+            _hourly_series(fc, "cloud_cover_low"),
+            _hourly_series(fc, "cloud_cover_mid"),
+            _hourly_series(fc, "cloud_cover_high"),
+            _hourly_series(fc, "precipitation_probability"),
+            center,
+            before_hours=before_h,
+            after_hours=after_h,
+        )
+        log(f"  · 预计持续: {duration if duration is not None else '未知'}")
         return {
             "date": date,
             "vividness": vividness,
@@ -324,6 +414,7 @@ def fetch_openmeteo(model: str = "ecmwf_ifs025") -> dict:
             "aod": aod,
             "model_run": f"Open-Meteo {model_label} + CAMS 简化评分",
             field: center,
+            "duration_minutes": duration,
         }
 
     sunset = build_event(sunset_dt, True)
