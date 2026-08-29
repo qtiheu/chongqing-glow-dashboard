@@ -84,10 +84,27 @@ export function sourceLabel(source: string): string {
   return source || "未知";
 }
 
-/** 预计持续时长格式化：分钟 → "约 X 分钟"；未知返回 "—" */
-export function formatDuration(minutes: number | null | undefined): string {
-  if (!minutes || minutes <= 0) return "—";
-  return `约 ${Math.round(minutes)} 分钟`;
+/** 预计持续时长格式化：由事件时刻+分钟换算成 "HH:MM~HH:MM"；未知返回 "—" */
+export function formatDuration(
+  minutes: number | null | undefined,
+  centerTime?: string | null,
+  isSunset?: boolean
+): string {
+  if (!minutes || minutes <= 0 || !centerTime) return "—";
+  const m = /^(\d{1,2}):(\d{2})$/.exec(centerTime);
+  if (!m) return "—";
+  const total = Math.round(minutes);
+  const beforeRatio = isSunset ? 0.6 : 0.4;
+  const beforeMin = Math.round(total * beforeRatio);
+  const afterMin = total - beforeMin;
+
+  const centerMin = Number(m[1]) * 60 + Number(m[2]);
+  const fmt = (min: number) => {
+    const h = Math.floor(((min % 1440) + 1440) % 1440 / 60);
+    const mm = ((min % 1440) + 1440) % 1440 % 60;
+    return `${String(h).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+  };
+  return `${fmt(centerMin - beforeMin)}~${fmt(centerMin + afterMin)}`;
 }
 
 export function formatUpdated(iso: string | null | undefined): string {
