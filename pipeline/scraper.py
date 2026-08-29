@@ -8,6 +8,8 @@
            接口: GET https://sunsetbot.top/?intend=select_city&query_city={城市}&event={事件}&model={模型}
            event 取值: set_1=今天日落 / rise_2=明天日出; model 取值: EC / GFS
 降级数据源: Open-Meteo（免费 API，无需 key）
+           第一优先: ECMWF IFS 0.25° 高精度模型（models=ecmwf_ifs025，与主源同源的 ECMWF 数据）
+           第二优先: Open-Meteo 默认模型（兜底）
            综合 高/中/低云覆盖率 + CAMS 气溶胶 + 湿度 + 能见度 + 降水概率
            用简化评分模型计算 0~2.5 鲜艳度
 
@@ -17,7 +19,7 @@
 
 健壮性:
     - UA / 超时 / 每次请求重试 2 次
-    - 主源连续失败自动降级 Open-Meteo，并在 source 字段标注
+    - 主源连续失败自动降级 Open-Meteo（ECMWF IFS → 默认模型），并在 source 字段标注
     - 全源失败时保留旧 JSON 并写 "stale": true，绝不静默失败
 """
 from __future__ import annotations
@@ -260,9 +262,13 @@ def _vividness_score(cloud_low, cloud_mid, cloud_high, aod, humidity, visibility
     return round(max(0.0, min(2.5, score)), 2)
 
 
-def fetch_openmeteo() -> dict:
-    """Open-Meteo 降级抓取。"""
-    log("降级源 Open-Meteo: 抓取云况/湿度/能见度/降水 + 日出日落")
+def fetch_openmeteo(model: str = "ecmwf_ifs025") -> dict:
+    """
+    Open-Meteo 降级抓取。
+    model: "ecmwf_ifs025"（ECMWF IFS 0.25° 高精度，默认）或 None（Open-Meteo 默认模型兜底）。
+    """
+    model_label = "ECMWF IFS 0.25°" if model else "默认模型"
+    log(f"降级源 Open-Meteo[{model_label}]: 抓取云况/湿度/能见度/降水 + 日出日落")
     params = {
         "latitude": CHONGQING_LAT,
         "longitude": CHONGQING_LON,
@@ -272,6 +278,8 @@ def fetch_openmeteo() -> dict:
         "timezone": "Asia/Shanghai",
         "forecast_days": 2,
     }
+    if model:
+        params["models"] = model
     fc = http_get(OPENMETEO_URL, params=params).json()
 
     aq_params = {
@@ -314,7 +322,7 @@ def fetch_openmeteo() -> dict:
             "vividness": vividness,
             "level": level_of(vividness),
             "aod": aod,
-            "model_run": "Open-Meteo CAMS 简化评分",
+            "model_run": f"Open-Meteo {model_label} + CAMS 简化评分",
             field: center,
         }
 
@@ -368,11 +376,16 @@ def main() -> int:
         fail_count += 1
         if fail_count > MAIN_FAIL_TOLERANCE:
             fail_count = MAIN_FAIL_TOLERANCE
-        try:
-            forecast = fetch_openmeteo()
-            source = "open-meteo"
-        except Exception as e2:
-            log(f"✗ 降级源也失败: {e2!r}")
+        # 降级链: Open-Meteo ECMWF IFS 0.25° → Open-Meteo 默认模型
+        for model, src in (("ecmwf_ifs025", "open-meteo-ecmwf"), (None, "open-meteo")):
+            try:
+                forecast = fetch_openmeteo(model=model)
+                source = src
+                log(f"✓ 降级源 {src} 成功")
+                break
+            except Exception as e2:
+                log(f"✗ 降级源 {src} 失败: {e2!r}")
+        if forecast is None:
             if old.get("sunset") and old.get("sunrise"):
                 forecast = old
                 forecast["stale"] = True
