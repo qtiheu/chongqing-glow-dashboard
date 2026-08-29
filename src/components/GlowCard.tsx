@@ -1,6 +1,6 @@
 import { Sun, Sunrise, Sunset, CloudFog } from "lucide-react";
 import type { GlowEvent } from "@/lib/types";
-import { levelMeta, verdictOf, aodLabel } from "@/lib/levels";
+import { levelMeta, verdictOf, aodLabel, formatDuration } from "@/lib/levels";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -132,6 +132,12 @@ export function GlowCard({ kind, event, loading }: Props) {
           <div>
             <div className="text-xs text-muted-foreground">{timeLabel}时间</div>
             <div className="tabular mt-0.5 font-medium">{time ?? "—"}</div>
+          </div>
+          <div>
+            <div className="text-xs text-muted-foreground">预计持续</div>
+            <div className="tabular mt-0.5 font-medium">
+              {formatDuration(event.duration_minutes)}
+            </div>
           </div>
           <div className="col-span-2">
             <div className="text-xs text-muted-foreground">预报模型 · 时次</div>
