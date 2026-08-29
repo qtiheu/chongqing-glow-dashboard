@@ -75,6 +75,27 @@ def advice_for(vividness: float) -> str:
     return "不用等，安心休息"
 
 
+def duration_window(center: str, minutes, is_sunset: bool) -> Optional[str]:
+    """
+    由事件时刻 + 持续分钟数，换算成起止时间 "HH:MM~HH:MM"。
+    分配比例：日落前多后少（前 60% / 后 40%），日出前少后多（前 40% / 后 60%）。
+    任一输入缺失返回 None。
+    """
+    if not center or not minutes:
+        return None
+    try:
+        ch, cm = (int(x) for x in center.split(":"))
+        minutes = int(minutes)
+    except (ValueError, TypeError):
+        return None
+    before_ratio = 0.6 if is_sunset else 0.4
+    before_min = int(round(minutes * before_ratio))
+    after_min = minutes - before_min
+    start = datetime(2000, 1, 1, ch, cm) - timedelta(minutes=before_min)
+    end = datetime(2000, 1, 1, ch, cm) + timedelta(minutes=after_min)
+    return f"{start.strftime('%H:%M')}~{end.strftime('%H:%M')}"
+
+
 def build_message(forecast: dict, event: str, threshold: float) -> tuple[str, str]:
     """构造 (title, content_html)。"""
     city = forecast.get("city", "重庆")
@@ -95,11 +116,8 @@ def build_message(forecast: dict, event: str, threshold: float) -> tuple[str, st
     fire = "【🔥值得出门】" if vividness >= threshold else ""
     title = f"{fire}{emoji} {city}·{head}预报"
 
-    # 持续时间展示：有值显示"约 X 分钟"，否则显示"—"
-    if duration_minutes:
-        duration_text = f"约 {int(duration_minutes)} 分钟"
-    else:
-        duration_text = "—"
+    # 持续时间展示：换算成起止时间 "HH:MM~HH:MM"，无数据显示 "—"
+    duration_text = duration_window(event_time, duration_minutes, event == "sunset") or "—"
 
     lines = [
         f"{emoji} {city}·{head}预报",
