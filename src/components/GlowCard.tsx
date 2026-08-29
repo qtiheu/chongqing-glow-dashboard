@@ -136,7 +136,7 @@ export function GlowCard({ kind, event, loading }: Props) {
           <div>
             <div className="text-xs text-muted-foreground">预计持续</div>
             <div className="tabular mt-0.5 font-medium">
-              {formatDuration(event.duration_minutes)}
+              {formatDuration(event.duration_minutes, time, kind === "sunset")}
             </div>
           </div>
           <div className="col-span-2">
