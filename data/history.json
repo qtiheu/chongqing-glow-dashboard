@@ -83,5 +83,10 @@
     "date": "2026-08-31",
     "sunrise_vividness": 0.42,
     "sunset_vividness": 0.58
+  },
+  {
+    "date": "2026-09-01",
+    "sunrise_vividness": 0.13,
+    "sunset_vividness": 0.02
   }
 ]
