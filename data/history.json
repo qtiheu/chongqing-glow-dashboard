@@ -86,7 +86,7 @@
   },
   {
     "date": "2026-09-01",
-    "sunrise_vividness": 0.1,
-    "sunset_vividness": 0.07
+    "sunrise_vividness": 0.0,
+    "sunset_vividness": 0.19
   }
 ]
