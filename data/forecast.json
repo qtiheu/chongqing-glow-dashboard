@@ -1,26 +1,26 @@
 {
   "sunset": {
     "date": "2026-10-03",
-    "vividness": 0.24,
-    "level": "微烧",
-    "aod": 0.42500000000000004,
+    "vividness": 0.17,
+    "level": "不烧",
+    "aod": 0.34,
     "model_run": "Open-Meteo ECMWF IFS 0.25° + CAMS 简化评分",
     "sunset_time": "18:37",
     "duration_minutes": null
   },
   "sunrise": {
     "date": "2026-10-04",
-    "vividness": 0.34,
-    "level": "微烧",
-    "aod": 0.3116666666666667,
+    "vividness": 0.04,
+    "level": "不烧",
+    "aod": 0.36000000000000004,
     "model_run": "Open-Meteo ECMWF IFS 0.25° + CAMS 简化评分",
     "sunrise_time": "06:48",
     "duration_minutes": null
   },
   "sunsetbot_fail_count": 2,
   "city": "重庆主城",
-  "updated_at": "2026-10-03T02:40:00+08:00",
+  "updated_at": "2026-10-03T20:40:55+08:00",
   "source": "open-meteo-ecmwf",
   "stale": false,
-  "last_push_at": "2026-10-03T02:40:01+08:00"
+  "last_push_at": "2026-10-03T20:40:56+08:00"
 }
